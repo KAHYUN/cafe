@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	                                       http://www.springframework.org/schema/beans/spring-beans.xsd
+	                                      http://www.springframework.org/schema/security 
+	                                      http://www.springframework.org/schema/security/spring-security.xsd">
+   <!--xmlns = 가장 많이 쓰는 태그는 접두사 없이 사용이 가능하지만, 그렇지 않을 경우 별칭(이름을 붙여야한다.) 그리고 
+      web.xml에서 -->
+
+
+   <http>
+      <intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')" />
+      <intercept-url pattern="/member/**" access="hasRole('ROLE_USER')" />
+      
+      <form-login login-page="/member/login" default-target-url="/member/login"/>
+      <logout logout-success-url="/index"/>
+      <!--인터셉터에 관한 로그인 폼을 제공한다.-->
+      
+   </http>
+
+   <authentication-manager>
+      <authentication-provider>
+          <jdbc-user-service 
+          data-source-ref="dataSource" 
+          users-by-username-query="select `id`, pwd  `password`, 1 enabled from Member where id = ?"
+          authorities-by-username-query="select id, `ROLE_USER` authority from Member where id = ?" />
+         <!-- <user-service>
+            <user name="newlec" password="111" authorities="ROLE_ADMIN,ROLE_USER"/>
+            <user name="dragon" password="111" authorities="ROLE_USER"/>
+         </user-service> -->
+      </authentication-provider>
+   </authentication-manager>
+   <!--인터셉터할 url이 있으면 권한에 따라서 사용이 가능하다. 이 url을 갖고 있는 컨트롤러는 인증을 요구한다. -->
+
+</beans:beans>
